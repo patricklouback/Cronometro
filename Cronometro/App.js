@@ -1,112 +1,136 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import type {Node} from 'react';
+import React, { Component } from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
+  Image,
+  TouchableOpacity,
+  TouchableHighlightBase
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+class App extends Component{
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+  constructor(props){
+    super(props);
+    this.state = {
+      numero: 0,
+      botao: 'VAI',
+      ultimo: null
+    };
+    this.timer = null;
+    this.vai = this.vai.bind(this);
+    this.limpar = this.limpar.bind(this);
+  }
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  vai(){
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+    if(this.timer != null){
+      clearInterval(this.timer);
+      this.timer = null;
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+      this.setState({botao: 'VAI', ultimo: ''})
+    }
+    else {
+      this.timer = setInterval (
+        () => {this.setState({numero: this.state.numero + 0.1})}, 100);
+        this.setState({botao: 'PARAR', ultimo: ''})
+    }
+  }
+
+  limpar(){
+    clearInterval(this.timer);
+    this.setState({ 
+      ultimo: this.state.numero.toFixed(1) + 's',
+      numero: 0,
+      botao: 'VAI'
+    })
+
+    this.timer = null;
+
+  }
+
+  render(){
+    return(
+
+      <View style = { estilos.container }>
+
+        <Image 
+          source = { require('./src/cronometro.png') }
+          style = {estilos.img}
+        />
+
+        <Text style = { estilos.timer }>{this.state.numero.toFixed(1)}</Text>
+
+        <View style = { estilos.btnArea }>
+
+          <TouchableOpacity style = { estilos.btn } onPress = { this.vai }>
+            <Text style = { estilos.btnTexto }>{this.state.botao}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style = { estilos.btn } onPress = { this.limpar }>
+            <Text style = { estilos.btnTexto }>LIMPAR</Text>
+          </TouchableOpacity>
+
         </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+        <View style= { estilos.areaUltima }>
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+        <Text style = { estilos.textoCorrida }>
+          {this.state.ultimo}
+        </Text>
+
+        </View>
+      </View>
+
+    );
+  }
+}
+
+const estilos = StyleSheet.create({
+
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#00aeef'
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  timer: {
+    marginTop: -170,
+    color: '#FFF',
+    fontSize: 65,
+    fontWeight: 'bold'
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  img:{
+    width: 250,
+    height: 300
   },
-  highlight: {
-    fontWeight: '700',
+
+btnArea:{
+    flexDirection: 'row',
+    marginTop: 90,
+    height: 40
   },
+  btn:{
+    flex:1,
+    justifyContent:'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    height: 40,
+    margin: 17,
+    borderRadius: 9
+  },
+  btnTexto:{
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#00aeef'
+  },
+  areaUltima:{
+    marginTop: 40,
+  },
+  textoCorrida:{
+    fontSize:25,
+    fontStyle:'italic',
+    color: '#FFF'
+  }
 });
 
 export default App;
